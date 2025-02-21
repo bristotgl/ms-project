@@ -10,9 +10,26 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - msproject-network
+      - user-service-network
+      - database-network
     volumes:
       - user-db-data:/var/lib/postgresql/data
+
+  email-service-db:
+    image: postgres:17.2
+    container_name: email-service-db
+    restart: always
+    environment:
+      POSTGRES_DB: email_db
+      POSTGRES_USER: email
+      POSTGRES_PASSWORD: email
+    ports:
+      - "5433:5432"
+    networks:
+      - email-service-network
+      - database-network
+    volumes:
+      - email-db-data:/var/lib/postgresql/data
 
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -24,11 +41,15 @@ services:
     ports:
       - "5050:80"
     networks:
-      - msproject-network
+      - database-network
     depends_on:
       - user-service-db
+      - email-service-db
 #      - user-service
-#
+#      - email-service
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
 #  user-service:
 #    build: ./user-service
 #    container_name: user-service
@@ -40,15 +61,35 @@ services:
 #      DB_PORT: 5432
 #      DB_NAME: user_db
 #      DB_USER: user
-#      DB_PASSWORD: password
+#      DB_PASSWORD: user
 #    ports:
 #      - "8080:8080"
 #    networks:
-#      - msproject-network
-
+#      - user-service-network
+#
+#  email-service:
+#    build: ./email-service
+#    container_name: email-service
+#    restart: always
+#    depends_on:
+#      - email-service-db
+#    environment:
+#      DB_HOST: email-service-db
+#      DB_PORT: 5432
+#      DB_NAME: email_db
+#      DB_USER: email
+#      DB_PASSWORD: email
+#    ports:
+#      - "8081:8080"
+#    networks:
+#      - email-service-network
 
 networks:
-  msproject-network:
+  email-service-network:
+  user-service-network:
+  database-network:
 
 volumes:
   user-db-data:
+  email-db-data:
+  pgadmin-data:

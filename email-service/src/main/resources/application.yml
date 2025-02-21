@@ -1,10 +1,10 @@
 spring:
   application:
-    name: user-service
+    name: email-service
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:user_db}
-    username: ${DB_USER:user}
-    password: ${DB_PASSWORD:user}
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/${DB_NAME:email_db}
+    username: ${DB_USER:email}
+    password: ${DB_PASSWORD:email}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -15,4 +15,4 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
 server:
-  port: 8081
+  port: 8082
