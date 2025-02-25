@@ -1,10 +1,13 @@
+server:
+  port: 8082
+
 spring:
   application:
-    name: email-service
+    name: emailTo-service
   datasource:
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/${DB_NAME:email_db}
-    username: ${DB_USER:email}
-    password: ${DB_PASSWORD:email}
+    username: ${DB_USER:emailTo}
+    password: ${DB_PASSWORD:emailTo}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -13,6 +16,10 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  rabbitmq:
+    addresses: amqps://bxwltprb:UNjY4fGcbdba3zjEo7IdA4jxRMiRcaRQ@shrimp.rmq.cloudamqp.com/bxwltprb
 
-server:
-  port: 8082
+broker:
+  queue:
+    email:
+      name: default.email
