@@ -18,9 +18,9 @@ public class UserProducer {
     private String routingKey;
 
     public void publishMessageEmail(User user) {
-        String text = "rall elorim is a beautiful, royal and regal place";
-        String subject = "about rall elorim";
-        EmailDto emailDto = new EmailDto(user.getUserId(), user.getEmail(), text, subject);
+        String text = "some cool new thing about age of mythology";
+        String subject = "ISVOLI Tuesday! ed. 34";
+        EmailDto emailDto = new EmailDto(user.getUserId(), user.getEmail(), subject, text);
 
         rabbitTemplate.convertAndSend("", routingKey, emailDto);
     }

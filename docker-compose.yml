@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_DB: user_db
       POSTGRES_USER: user
-      POSTGRES_PASSWORD: user
+      POSTGRES_PASSWORD_FILE: /run/secrets/user_db_password
     ports:
       - "5432:5432"
     networks:
@@ -14,6 +14,8 @@ services:
       - database-network
     volumes:
       - user-db-data:/var/lib/postgresql/data
+    secrets:
+      - user_db_password
 
   email-service-db:
     image: postgres:17.2
@@ -22,7 +24,7 @@ services:
     environment:
       POSTGRES_DB: email_db
       POSTGRES_USER: email
-      POSTGRES_PASSWORD: email
+      POSTGRES_PASSWORD_FILE: /run/secrets/email_db_password
     ports:
       - "5433:5432"
     networks:
@@ -30,6 +32,8 @@ services:
       - database-network
     volumes:
       - email-db-data:/var/lib/postgresql/data
+    secrets:
+      - email_db_password
 
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -45,44 +49,40 @@ services:
     depends_on:
       - user-service-db
       - email-service-db
-#      - user-service
-#      - email-service
+      - user-service
+      - email-service
     volumes:
       - pgadmin-data:/var/lib/pgadmin
 
-#  user-service:
-#    build: ./user-service
-#    container_name: user-service
-#    restart: always
-#    depends_on:
-#      - user-service-db
-#    environment:
-#      DB_HOST: user-service-db
-#      DB_PORT: 5432
-#      DB_NAME: user_db
-#      DB_USER: user
-#      DB_PASSWORD: user
-#    ports:
-#      - "8080:8080"
-#    networks:
-#      - user-service-network
-#
-#  email-service:
-#    build: ./email-service
-#    container_name: email-service
-#    restart: always
-#    depends_on:
-#      - email-service-db
-#    environment:
-#      DB_HOST: email-service-db
-#      DB_PORT: 5432
-#      DB_NAME: email_db
-#      DB_USER: email
-#      DB_PASSWORD: email
-#    ports:
-#      - "8081:8080"
-#    networks:
-#      - email-service-network
+  user-service:
+    build: ./user-service
+    container_name: user-service
+    restart: always
+    depends_on:
+      - user-service-db
+    environment:
+      DB_HOST: user-service-db
+      DB_PORT: 5432
+      USER_DB_PASSWORD: /run/secrets/user_db_password
+    ports:
+      - "8080:8080"
+    networks:
+      - user-service-network
+
+  email-service:
+    build: ./email-service
+    container_name: email-service
+    restart: always
+    depends_on:
+      - email-service-db
+    environment:
+      DB_HOST: email-service-db
+      DB_PORT: 5432
+      EMAIL_DB_PASSWORD: /run/secrets/email_db_password
+    ports:
+      - "8081:8080"
+    networks:
+      - email-service-network
 
 networks:
   email-service-network:
@@ -93,3 +93,9 @@ volumes:
   user-db-data:
   email-db-data:
   pgadmin-data:
+
+secrets:
+  user_db_password:
+    file: ./secrets/user_db_password.txt
+  email_db_password:
+    file: ./secrets/email_db_password.txt
